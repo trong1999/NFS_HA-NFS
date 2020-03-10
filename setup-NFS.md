@@ -34,7 +34,7 @@
   + **mkdir /share**
 - Vào file /etc/exports để xác định địa chỉ được export và phân quyền cho địa chỉ đó.
   + **vim /etc/exports**
-  + add : **/share            192.168.5.10(rw,sync,no_root_squash,no_all_squash)**
+  + add : **/share            192.168.5.6(rw,sync,no_root_squash,no_all_squash)**
   + Địa chỉ ip trên là từ đâu, đó là địa chỉ client được mount
   + Ở đây, ip có quyền được read and write, và được chấp nhận cả quyền root và tất cả các quyền khác.
 - Sau đó chúng ta sẽ vào firewall để enable service
