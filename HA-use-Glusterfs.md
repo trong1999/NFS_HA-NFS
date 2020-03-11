@@ -42,20 +42,51 @@
   + Trên storage nào cũng được: **gluster peer probe storage2.org**
   + <img src="https://i.imgur.com/HSHx7Bz.png">
 - Tạo volume tên share trên 2 storage 
-  + **gluster volume create share replica 2 transport tcp storage1.org:/data storage2.org:/data force**
+  + **gluster volume create glusterfsvolumne replica 2 storage1.org:/data/glusterfs/glustervolume      storage2.org:/data/glusterfs/glustervolume force**
+  + Vậy **/data/glusterfs/glustervolume** là gì ? Nó là folder của volume
+- **/data/glusterfs** ở đâu ra ?
+  + đầu tiền ta phải add thêm disk thêm sao server đó là **/dev/sdb**
+  + **fdisk /dev/sdb**
+  + <img src="https://i.imgur.com/8KKP9iP.png">
+  + **mkfs.ext4 /dev/sdb1** => format partition
+  + <img src="https://i.imgur.com/dJA2DvQ.png">
+  + <img src="https://i.imgur.com/ckxu3Qc.png">
+  + Sau đó sẽ tạo **/data/glusterfs** và lưu vào **/etc/fstab**
+  + <img src="https://i.imgur.com/CsrZ1Df.png">
+- Tạo volume 
+  + **gluster volume create glusterfsvolumne replica 2 storage1.org:/data/glusterfs/glustervolume storage2.org:/data/glusterfs/glustervolume**
+  + <img src="https://i.imgur.com/jJtXFrx.png">
+  + Sau đó start và kiểm tra
+  + <img src="https://i.imgur.com/p8QJImM.png">
 - Default thì gluster cho phép tất cả các kết nối đến volume, ở đây ta sẽ chỉ cho hai server kết nối vào thôi
-  + **gluster volume set Host auth.allow 192.168.5.2,192.168.5.3**
+  + **gluster volume set glusterfsvolumne auth.allow 192.168.5.2,192.168.5.3**
 - Check volume info
-  + Trên storage1: <img src="https://i.imgur.com/QIqIqMu.png">
-  + Trên storage2: <img src="https://i.imgur.com/tMcVch0.png">
+  + Trên storage1: <img src="https://i.imgur.com/MiF3lQi.png">
+  + Trên storage2: <img src="https://i.imgur.com/XuONjId.png">
   
 - Cài đặt Glusterfs-client
-  + **yum install glusterfs-client**
-- Tạo thư mục **mkdir /share**
-- Sau đó vào **/etc/fstab** để mount 
-  + ****
-  
-  
+  + Trước khi ta cài đặt cho client ta cần phải check xem version trên server, mục đích là để cho version ở hai bản tương thích với nhau, điều này rất quan trọng để có mount được.
+  + <img src="https://i.imgur.com/OYjOeWx.png">
+  + **rpm -i glusterfs-7.3-1.el7.x86_64.rpm**
+  + **rpm -i glusterfs-fuse-7.3-1.el7.x86_64.rpm**
+  + <img src="https://i.imgur.com/KaxrXec.png">
+  + Sau khi cài đặt xong, ta sẽ tạo một folder để mount volume : **mkdir -p /mnt/glusterfsvolumne**
+  + Tiếp theo là sẽ mount **mount -t glusterfs storage1.org:/glusterfsvolumne /mnt/glusterfsvolumne**
+  + Ở đây ta có thể dùng storage1 hoặc storage2
+  + Check mount
+  + <img src="https://i.imgur.com/qB01fcQ.png">
+- Replication
+  + Trên storage1: **mount -t glusterfs storage2.org:/glusterfsvolumne /mnt**
+  + Trên storage2: **mount -t glusterfs storage1.org:/glusterfsvolumne /mnt**
+  + Các file trên **client** như sau:
+  + <img src="https://i.imgur.com/85TvvNc.png">
+  + Check xem trên 2 **storage** thế nào 
+  + <img src="https://i.imgur.com/HXqCWf1.png">
+  + <img src="https://i.imgur.com/HXqCWf1.png">
+- **Thử tắt đi storage1.org và thêm vào Glusterfs-client một file xem thế nào** 
+  + <img src="https://i.imgur.com/kgMPCYK.png">
+  + Ta thấy đã có file **demo.txt** rồi nhé.
+  + Đáng lưu ý là trong file **/etc/fstab** ta vẫn không thay đổi gì => điều này có được là vì ở bước trước ta đã tạo thêm một disk để cho cả hai storage sẽ replication dữ liệu với nhau.
   
   
   
