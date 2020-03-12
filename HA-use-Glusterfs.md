@@ -75,7 +75,7 @@
   + Ở đây ta có thể dùng storage1 hoặc storage2
   + Check mount
   + <img src="https://i.imgur.com/qB01fcQ.png">
-- Replication
+### Replication test
   + Trên storage1: **mount -t glusterfs storage2.org:/glusterfsvolumne /mnt**
   + Trên storage2: **mount -t glusterfs storage1.org:/glusterfsvolumne /mnt**
   + Các file trên **client** như sau:
