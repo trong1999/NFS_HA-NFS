@@ -24,13 +24,13 @@
   + Trên cả hai con ta start: **systemctl start keepalived.service**
 - Sau đó kiểm tra
   + **ip a**
-  + <img src="https://i.imgur.com/eqfocUM.png">
+  + <img src="https://i.imgur.com/K0omq1y.png">
   + Tắt server primary xem trên server slave có hiển thị VIP không nhé:
-  + <img src="https://i.imgur.com/WyIK0dt.png">
-- cài đặt nfs lên hai con server
+  + <img src="https://i.imgur.com/YEIejF4.png">
+ ## Setup nfs lên hai con server
   + **yum install nfs-utils**
   + **systemctl start nfs.service**
-- Tạo thư mục /share được chia sẻ bởi nfs
+- Tạo thư mục /data/nfs được chia sẻ bởi nfs
   + **mkdir /data/nfs**
 - Vào file /etc/exports để xác định địa chỉ được export và phân quyền cho địa chỉ đó.
   + **vim /etc/exports**
@@ -40,15 +40,16 @@
 - Sau đó chúng ta sẽ vào firewall để enable service
   + **firewall-cmd --permanent --zone=public --add-service=nfs**
   + **firewall-cmd --reload**
-- Trên nfs-client, ta cũng sẽ setup như sau
+## Setup nfs-client, ta cũng sẽ setup như sau
   + **yum install nfs-utils**
   + **systemctl start nfs.service**
 - Việc tạo disk và cấu hình sẽ tương tự với glusterfs
 - Sau đó cài đặt **yum install -y pcs fence-agents-all** trên cả hai server
-- Tạo authen trên các node
+- Tạo authen trên các node cluster
   + **echo "1234" | passwd --stdin hacluster**
   + <img src="https://i.imgur.com/HnuDdv9.png">
   + <img src="https://i.imgur.com/fzZzx4y.png">
+### Trên server
 - Tạo filesystem recource vì phải cần một storege share
   + **pcs resource create nfsshare Filesystem device=/dev/sdb1  directory=/data/nfs fstype=xfs --group nfsgrp**
 - Tạo nfsserver resource
@@ -57,7 +58,9 @@
   + **pcs resource create nfsroot exportfs clientspec="192.168.5.30/24" options=rw,sync,no_root_squash directory=/data/nfs fsid=0 --group nfsgrp**
 - Tạo NFS Addr2 (cho phép địac chỉ ip card mạng ảo NFS)
   + **pcs resource create nfsip IPaddr2 ip=192.168.5.10 cidr_netmask=32 --group nfsgrp**
-- Tạo thư mục mount
+### Trên client
+
+- Tạo thư mục mount trên **client**
   + **mkdir /mnt/nfsshare**
 - Sau đó vào file /etc/fstab để add địa chỉ mount
   + **192.168.5.10:/    /mnt/nfsshare   nfs defaults 0 0**
