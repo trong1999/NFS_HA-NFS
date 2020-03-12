@@ -75,5 +75,5 @@
 - Nếu trên client bạn gặp lỗi này
   + <img src="https://i.imgur.com/I60jyMv.png">
   + Ta sẽ fix như sau
-  + <img src="https://i.imgur.com/I60jyMv.png">
+  + <img src="https://i.imgur.com/HgquLcf.png">
 #### Vậy là đã xong
